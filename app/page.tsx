@@ -6,17 +6,7 @@ import Typewriter from 'typewriter-effect';
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      {/* <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#000',
-        color: '#fff',
-        fontFamily: 'Lucida Console, Monaco, monospace',
-        fontSize: '2rem',
-      }}> */}
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex mt-5">
         <Typewriter
           options={{
             cursor: " ",
@@ -30,7 +20,8 @@ export default function Home() {
           }}
         />
       </div>
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm md:flex">
+      {/* <div className="z-11 max-w-5xl w-full items-center justify-between font-mono text-md md:flex"> */}
+      <div className="relative before:absolute max-w-5xl w-full max-h-1xl items-center font-mono text-md md:flex mb-28">
         <Head>
           <title>Varun Kamath</title>
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
