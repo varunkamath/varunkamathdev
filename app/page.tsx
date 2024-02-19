@@ -188,8 +188,6 @@ function AsciiBall() {
   return <div ref={mountRef} />;
 }
 
-// export function CubeComponent;
-
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 border">
