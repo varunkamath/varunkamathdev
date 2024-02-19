@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { WebGLRenderer } from "three/src/Three.js";
+import * as emoji from 'node-emoji'
 
 function CubeComponent() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -71,14 +72,14 @@ function CubeComponent() {
   }, []);
 
   return (<div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center">
-    <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-lg text-white">
+    <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-md md:invert text-white">
       <Typewriter
         options={{
           cursor: "_",
           delay: 75,
         }}
         onInit={(typewriter) => {
-          typewriter.pauseFor(500).typeString('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br />').pauseFor(2000).typeString('<a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br /> <a href="mailto:varun.kamath@gmail.com" class="underline">email me</a> if you must... ')
+          typewriter.pauseFor(500).typeString(emoji.emojify('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br />')).pauseFor(2000).typeString('<a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br />').pauseFor(1000).typeString('or ').pauseFor(1000).typeString('.').pauseFor(300).typeString('.').pauseFor(300).typeString('. ').pauseFor(300).typeString('<a href="mailto:varun.kamath@gmail.com" class="underline">email me</a>. ')
             .callFunction(() => {
               console.log('String typed out!');
             })
