@@ -19,14 +19,13 @@ export default function Home() {
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <Typewriter
           options={{
-            cursor: "_",
+            cursor: " ",
             delay: 10,
           }}
           onInit={(typewriter) => {
-            typewriter.typeString('````````````````````___```<br />`````````````````.\'/```\\``<br />```.````````.--./`/````\\`<br />`.\'|````````|__||`|`````|`<br /><``|````````.--.|`|`````|`<br />`|`|````````|``||/`.```.\'`<br />`|`|`.\'\'\'-.`|``|``.|```|``<br />`|`|/.\'\'\'.`\\|``|``||___|``<br />`|``/````|`||``|``|/___/``<br />`|`|`````|`||__|``.\'.--.``<br />`|`|`````|`|`````|`|````|`<br />`|`\'.````|`\'\.````\\_\\````/`<br />`\'---\'```\'---\'`````\'\'--\'``')
-              .callFunction(() => {
-                console.log('String typed out!');
-              })
+            typewriter.typeString('&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp___&nbsp&nbsp&nbsp<br />&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.\'/&nbsp&nbsp&nbsp\\&nbsp&nbsp<br />&nbsp&nbsp&nbsp.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.--.&nbsp/&nbsp/&nbsp&nbsp&nbsp&nbsp\\&nbsp<br />&nbsp.\'|&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp|__||&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp<br /><&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.--.|&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp<br />&nbsp|&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp||/&nbsp.&nbsp&nbsp&nbsp.\'&nbsp<br />&nbsp|&nbsp|&nbsp.\'\'\'-.&nbsp|&nbsp&nbsp|&nbsp&nbsp.|&nbsp&nbsp&nbsp|&nbsp&nbsp<br />&nbsp|&nbsp|/.\'\'\'.&nbsp\\|&nbsp&nbsp|&nbsp&nbsp||___|&nbsp&nbsp<br />&nbsp|&nbsp&nbsp/&nbsp&nbsp&nbsp&nbsp|&nbsp||&nbsp&nbsp|&nbsp&nbsp|/___/&nbsp&nbsp<br />&nbsp|&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp||__|&nbsp&nbsp.\'.--.&nbsp&nbsp<br />&nbsp|&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp|&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp|&nbsp&nbsp&nbsp&nbsp|&nbsp<br />&nbsp|&nbsp\'.&nbsp&nbsp&nbsp&nbsp|&nbsp\'\.&nbsp&nbsp&nbsp&nbsp\\_\\&nbsp&nbsp&nbsp&nbsp/&nbsp<br />&nbsp\'---\'&nbsp&nbsp&nbsp\'---\'&nbsp&nbsp&nbsp&nbsp&nbsp\'\'--\'&nbsp&nbsp').callFunction(() => {
+              console.log('String typed out!');
+            })
               .start();
           }}
         />
@@ -39,9 +38,10 @@ export default function Home() {
         <Typewriter
           options={{
             cursor: "_",
+            delay: 100,
           }}
           onInit={(typewriter) => {
-            typewriter.pauseFor(2000).typeString('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br /><a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br />')
+            typewriter.pauseFor(2000).typeString('👋, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br /><a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br />')
               .callFunction(() => {
                 console.log('String typed out!');
               })
