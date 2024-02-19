@@ -1,5 +1,7 @@
-import Image from "next/image";
+'use client'
+import React from "react";
 import Head from 'next/head';
+import Typewriter from 'typewriter-effect';
 
 export default function Home() {
   return (
@@ -15,11 +17,37 @@ export default function Home() {
         fontSize: '2rem',
       }}> */}
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+        <Typewriter
+          options={{
+            cursor: "_",
+            delay: 10,
+          }}
+          onInit={(typewriter) => {
+            typewriter.typeString('````````````````````___```<br />`````````````````.\'/```\\``<br />```.````````.--./`/````\\`<br />`.\'|````````|__||`|`````|`<br /><``|````````.--.|`|`````|`<br />`|`|````````|``||/`.```.\'`<br />`|`|`.\'\'\'-.`|``|``.|```|``<br />`|`|/.\'\'\'.`\\|``|``||___|``<br />`|``/````|`||``|``|/___/``<br />`|`|`````|`||__|``.\'.--.``<br />`|`|`````|`|`````|`|````|`<br />`|`\'.````|`\'\.````\\_\\````/`<br />`\'---\'```\'---\'`````\'\'--\'``')
+              .callFunction(() => {
+                console.log('String typed out!');
+              })
+              .start();
+          }}
+        />
+      </div>
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm md:flex">
         <Head>
           <title>Varun Kamath</title>
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         </Head>
-        Varun Kamath
+        <Typewriter
+          options={{
+            cursor: "_",
+          }}
+          onInit={(typewriter) => {
+            typewriter.pauseFor(2000).typeString('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br /><a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br />')
+              .callFunction(() => {
+                console.log('String typed out!');
+              })
+              .start();
+          }}
+        />
       </div>
       {/* <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
