@@ -71,14 +71,14 @@ function CubeComponent() {
   }, []);
 
   return (<div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center">
-    <div className="p-4 absolute items-center justify-center font-mono text-md bg-black">
+    <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-lg">
       <Typewriter
         options={{
           cursor: "_",
-          delay: 100,
+          delay: 75,
         }}
         onInit={(typewriter) => {
-          typewriter.pauseFor(1000).typeString('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br /><a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br /> <a href="mailto:varun.kamath@gmail.com" class="underline">email me</a> if you must... ')
+          typewriter.pauseFor(500).typeString('hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br />').pauseFor(2000).typeString('<a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br /> <a href="mailto:varun.kamath@gmail.com" class="underline">email me</a> if you must... ')
             .callFunction(() => {
               console.log('String typed out!');
             })
