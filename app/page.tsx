@@ -7,7 +7,7 @@ import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { WebGLRenderer } from "three/src/Three.js";
 
-export function CubeComponent() {
+function CubeComponent() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
