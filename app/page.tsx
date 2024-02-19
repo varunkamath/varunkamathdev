@@ -4,7 +4,7 @@ import Head from 'next/head';
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div style={{
+      {/* <div style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -13,7 +13,8 @@ export default function Home() {
         color: '#fff',
         fontFamily: 'Lucida Console, Monaco, monospace',
         fontSize: '2rem',
-      }}>
+      }}> */}
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <Head>
           <title>Varun Kamath</title>
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
