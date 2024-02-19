@@ -89,7 +89,7 @@ function CubeComponent() {
   </div>);
 }
 
-export function AsciiBall() {
+function AsciiBall() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
