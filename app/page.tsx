@@ -72,7 +72,7 @@ function CubeComponent() {
   }, []);
 
   return (<div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center">
-    <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-md invert text-white">
+    <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-md md:invert text-white">
       <Typewriter
         options={{
           cursor: "_",
