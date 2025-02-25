@@ -314,6 +314,7 @@ function ShapeComponent() {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const [showTooltip, setShowTooltip] = useState(true);
   const [currentShapeName, setCurrentShapeName] = useState<string>("shape");
+  const [isPersonalInfoMinimized, setIsPersonalInfoMinimized] = useState(false);
 
   // Apply styles to prevent scrolling on body when component mounts
   useEffect(() => {
@@ -512,33 +513,89 @@ function ShapeComponent() {
         </div>
       </div>
 
-      <div className="p-4 absolute items-center justify-center font-mono text-md backdrop-blur-md md:invert text-white z-10">
-        <Typewriter
-          options={{
-            cursor: "_",
-            delay: 75,
-          }}
-          onInit={(typewriter) => {
-            typewriter.pauseFor(500)
-              .typeString(emoji.emojify('Hi, I\'m <a href="https://varunkamath.dev" class="underline">Varun</a>.<br /><br />'))
-              .pauseFor(2000)
-              .typeString('<a href="https://github.com/varunkamath" class="underline">github.com/varunkamath</a><br /><br /><a href="https://linkedin.com/in/varun-kamath" class="underline">linkedin.com/in/varun-kamath</a><br /><br />')
-              .pauseFor(1000)
-              .typeString('or ')
-              .pauseFor(1000)
-              .typeString('.')
-              .pauseFor(300)
-              .typeString('.')
-              .pauseFor(300)
-              .typeString('. ')
-              .pauseFor(300)
-              .typeString('<a href="mailto:varun.kamath@gmail.com" class="underline">email me</a>. ')
-              .callFunction(() => {
-                console.log('String typed out!');
-              })
-              .start();
-          }}
-        />
+      {/* Personal info section with minimize/expand functionality */}
+      <div className={`absolute transition-all duration-300 ${isPersonalInfoMinimized
+        ? 'md:left-4 md:bottom-4 left-4 top-4 transform scale-90 opacity-80 hover:opacity-100'
+        : 'left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2'
+        }`}>
+
+        {/* Terminal wrapper - contains both the terminal box and the label */}
+        <div className="relative">
+          {/* The terminal box */}
+          <div className="p-4 pt-5 font-mono text-xs md:text-sm backdrop-blur-md md:invert text-white z-10 relative border border-gray-700 rounded-md bg-black bg-opacity-80 w-[350px] md:w-[420px] h-[280px] md:h-[320px] overflow-y-auto">
+            {/* Minimize/expand button */}
+            <button
+              className="absolute top-2 right-2 bg-black bg-opacity-70 hover:bg-opacity-100 rounded-full w-6 h-6 flex items-center justify-center text-white transition-colors duration-200 z-20"
+              onClick={() => setIsPersonalInfoMinimized(!isPersonalInfoMinimized)}
+              title={isPersonalInfoMinimized ? "Expand info" : "Minimize info"}
+            >
+              {isPersonalInfoMinimized ? "+" : "–"}
+            </button>
+
+            <div className="mt-0">
+              <Typewriter
+                options={{
+                  cursor: "_",
+                  delay: 50,
+                  deleteSpeed: 1,
+                }}
+                onInit={(typewriter) => {
+                  typewriter.pauseFor(500)
+                    // First command - whoami
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .typeString('whoami')
+                    .pauseFor(600)
+                    .typeString('<br/>')
+                    .pasteString('<a href="https://varunkamath.dev" class="underline text-cyan-400">varun</a><br/>', null)
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pauseFor(800)
+
+                    // Second command - GitHub
+                    .typeString('ls -l projects')
+                    .pauseFor(600)
+                    .typeString('<br/>')
+                    .pasteString('<a href="https://github.com/varunkamath" class="underline text-cyan-400">github.com/varunkamath</a><br/>', null)
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pauseFor(800)
+
+                    // Third command - LinkedIn
+                    .typeString('cat contact.txt')
+                    .pauseFor(600)
+                    .typeString('<br/>')
+                    .pasteString('<a href="https://linkedin.com/in/varun-kamath" class="underline text-cyan-400">linkedin.com/in/varun-kamath</a><br/>', null)
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pauseFor(800)
+
+                    // Fourth command - Need to get in touch
+                    .typeString('echo "Need to get in touch?"')
+                    .pauseFor(600)
+                    .typeString('<br/>')
+                    .pasteString('Need to get in touch?<br/>', null)
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pauseFor(800)
+
+                    // Fifth command - Email
+                    .typeString('mail -s "Hello" varun.kamath@gmail.com')
+                    .pauseFor(600)
+                    .typeString('<br/>')
+                    .pasteString('<a href="mailto:varun.kamath@gmail.com" class="underline text-cyan-400">Message sent!</a><br/>', null)
+                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .callFunction(() => {
+                      console.log('Shell typing completed!');
+                    })
+                    .start();
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Show minimized state indicator - now positioned in the wrapper */}
+          {isPersonalInfoMinimized && (
+            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 px-3 py-1 text-xs text-white rounded-md border border-gray-700 z-50 shadow-md">
+              Terminal
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
