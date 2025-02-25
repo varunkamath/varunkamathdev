@@ -515,7 +515,7 @@ function ShapeComponent() {
 
       {/* Personal info section with minimize/expand functionality */}
       <div className={`absolute transition-all duration-300 ${isPersonalInfoMinimized
-        ? 'md:left-4 md:bottom-4 left-4 top-4 transform scale-90 opacity-80 hover:opacity-100'
+        ? 'hidden md:block md:left-4 md:bottom-4 md:transform md:scale-90 md:opacity-80 md:hover:opacity-100'
         : 'left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2'
         }`}>
 
@@ -591,12 +591,25 @@ function ShapeComponent() {
 
           {/* Show minimized state indicator - now positioned in the wrapper */}
           {isPersonalInfoMinimized && (
-            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 px-3 py-1 text-xs text-white rounded-md border border-gray-700 z-50 shadow-md">
+            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 px-3 py-1 text-xs text-white rounded-md border border-gray-700 z-50 shadow-md md:block hidden">
               Terminal
             </div>
           )}
         </div>
       </div>
+
+      {/* Mobile-only floating button to restore terminal when minimized */}
+      {isPersonalInfoMinimized && (
+        <button
+          onClick={() => setIsPersonalInfoMinimized(false)}
+          className="md:hidden fixed bottom-4 left-4 bg-black bg-opacity-80 p-2 rounded-md border border-gray-700 font-mono text-white text-sm z-50 cursor-pointer hover:bg-opacity-100 hover:border-white transition-all duration-300 flex items-center justify-center"
+          aria-label="Open Terminal"
+        >
+          <span className="mr-2">✧</span>
+          <span>Terminal</span>
+          <span className="ml-2">✧</span>
+        </button>
+      )}
     </div>
   );
 }
