@@ -3,18 +3,26 @@ import React, { useEffect, useRef, useState } from "react";
 import Typewriter from 'typewriter-effect';
 import * as THREE from 'three';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
-import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { WebGLRenderer } from "three/src/Three.js";
 import * as emoji from 'node-emoji'
 
 function CubeComponent() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const isInteractingRef = useRef(false);
-  const autoRotationRef = useRef({ x: 0.01, y: 0.01 });
-  const previousMousePosition = useRef({ x: 0, y: 0 });
-  const previousTouchDistance = useRef<number | null>(null);
-  const cameraPositionRef = useRef({ z: 15 });
+  const cubeRef = useRef<THREE.Mesh | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const [showTooltip, setShowTooltip] = useState(true);
+
+  // Apply styles to prevent scrolling on body when component mounts
+  useEffect(() => {
+    // Set overflow hidden on body to prevent scrolling
+    document.body.style.overflow = 'hidden';
+
+    // Restore original styles on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   useEffect(() => {
     // Hide tooltip after 7 seconds or after user interaction
@@ -25,7 +33,7 @@ function CubeComponent() {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = cameraPositionRef.current.z;
+    camera.position.z = 15;
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -37,6 +45,9 @@ function CubeComponent() {
     effect.domElement.style.color = 'white';
     effect.domElement.style.backgroundColor = 'black';
 
+    // Make sure the canvas element gets proper touch handling
+    effect.domElement.style.touchAction = 'none';
+
     // Create a monochrome cube that will still show rotation clearly
     const geometry = new THREE.BoxGeometry(7, 7, 7);
     const material = new THREE.MeshPhongMaterial({
@@ -47,6 +58,7 @@ function CubeComponent() {
     });
 
     const cube = new THREE.Mesh(geometry, material);
+    cubeRef.current = cube;
     scene.add(cube);
 
     // Add lights with better positioning to show cube edges clearly
@@ -66,127 +78,25 @@ function CubeComponent() {
       mountRef.current.appendChild(effect.domElement);
     }
 
-    // Mouse wheel event for zooming
-    const onMouseWheel = (event: WheelEvent) => {
-      // Hide tooltip when user starts interacting
+    // Initialize OrbitControls
+    const controls = new OrbitControls(camera, effect.domElement);
+    controlsRef.current = controls;
+
+    // Configure controls
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.rotateSpeed = 0.7;
+    controls.enablePan = false;
+    controls.enableZoom = true;
+    controls.minDistance = 5;
+    controls.maxDistance = 25;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.0;
+
+    // Custom interaction handling to hide tooltip when user interacts
+    effect.domElement.addEventListener('pointerdown', () => {
       setShowTooltip(false);
-
-      // Zoom in or out based on wheel direction
-      const zoomSpeed = 0.5;
-      const delta = Math.sign(event.deltaY) * zoomSpeed;
-
-      // Update camera position for zoom effect
-      // Clamp between 5 (close) and 25 (far away)
-      cameraPositionRef.current.z = Math.max(5, Math.min(25, cameraPositionRef.current.z + delta));
-      camera.position.z = cameraPositionRef.current.z;
-    };
-
-    // Mouse interaction handlers with smoother rotation
-    const onMouseDown = (event: MouseEvent) => {
-      // Hide tooltip when user starts interacting
-      setShowTooltip(false);
-
-      isInteractingRef.current = true;
-      previousMousePosition.current = {
-        x: event.clientX,
-        y: event.clientY
-      };
-    };
-
-    const onMouseMove = (event: MouseEvent) => {
-      if (isInteractingRef.current) {
-        const deltaX = event.clientX - previousMousePosition.current.x;
-        const deltaY = event.clientY - previousMousePosition.current.y;
-
-        // Apply rotation directly to the cube based on mouse movement
-        // Use smaller multiplier for smoother rotation
-        cube.rotation.y += deltaX * 0.005;
-        cube.rotation.x += deltaY * 0.005;
-
-        previousMousePosition.current = {
-          x: event.clientX,
-          y: event.clientY
-        };
-      }
-    };
-
-    const onMouseUp = () => {
-      isInteractingRef.current = false;
-    };
-
-    // Calculate distance between two touch points
-    const getTouchDistance = (touch1: Touch, touch2: Touch): number => {
-      const dx = touch1.clientX - touch2.clientX;
-      const dy = touch1.clientY - touch2.clientY;
-      return Math.sqrt(dx * dx + dy * dy);
-    };
-
-    // Touch events for mobile
-    const onTouchStart = (event: TouchEvent) => {
-      // Hide tooltip when user starts interacting
-      setShowTooltip(false);
-
-      if (event.touches.length === 1) {
-        // Single touch - rotate
-        isInteractingRef.current = true;
-        previousMousePosition.current = {
-          x: event.touches[0].clientX,
-          y: event.touches[0].clientY
-        };
-      } else if (event.touches.length === 2) {
-        // Two touches - pinch to zoom
-        previousTouchDistance.current = getTouchDistance(event.touches[0], event.touches[1]);
-      }
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (isInteractingRef.current && event.touches.length === 1) {
-        // Handle rotation
-        const deltaX = event.touches[0].clientX - previousMousePosition.current.x;
-        const deltaY = event.touches[0].clientY - previousMousePosition.current.y;
-
-        cube.rotation.y += deltaX * 0.005;
-        cube.rotation.x += deltaY * 0.005;
-
-        previousMousePosition.current = {
-          x: event.touches[0].clientX,
-          y: event.touches[0].clientY
-        };
-      } else if (event.touches.length === 2 && previousTouchDistance.current !== null) {
-        // Handle pinch zoom
-        const currentDistance = getTouchDistance(event.touches[0], event.touches[1]);
-        const delta = (previousTouchDistance.current - currentDistance) * 0.05;
-
-        // Update camera position for zoom effect
-        // Clamp between 5 (close) and 25 (far away)
-        cameraPositionRef.current.z = Math.max(5, Math.min(25, cameraPositionRef.current.z + delta));
-        camera.position.z = cameraPositionRef.current.z;
-
-        previousTouchDistance.current = currentDistance;
-      }
-    };
-
-    const onTouchEnd = (event: TouchEvent) => {
-      if (event.touches.length < 1) {
-        isInteractingRef.current = false;
-      }
-
-      if (event.touches.length < 2) {
-        previousTouchDistance.current = null;
-      }
-    };
-
-    // Add event listeners
-    effect.domElement.addEventListener('mousedown', onMouseDown as EventListener);
-    effect.domElement.addEventListener('mousemove', onMouseMove as EventListener);
-    effect.domElement.addEventListener('mouseup', onMouseUp);
-    effect.domElement.addEventListener('mouseleave', onMouseUp);
-    effect.domElement.addEventListener('wheel', onMouseWheel as EventListener);
-
-    // Add touch event listeners
-    effect.domElement.addEventListener('touchstart', onTouchStart as EventListener);
-    effect.domElement.addEventListener('touchmove', onTouchMove as EventListener);
-    effect.domElement.addEventListener('touchend', onTouchEnd as EventListener);
+    });
 
     // Give the cube an initial tilt for better visual interest
     cube.rotation.x = 0.5;
@@ -196,10 +106,9 @@ function CubeComponent() {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Auto-rotate cube when not being dragged
-      if (!isInteractingRef.current) {
-        cube.rotation.x += autoRotationRef.current.x;
-        cube.rotation.y += autoRotationRef.current.y;
+      // Update controls (required for damping)
+      if (controlsRef.current) {
+        controlsRef.current.update();
       }
 
       effect.render(scene, camera);
@@ -211,6 +120,10 @@ function CubeComponent() {
       camera.updateProjectionMatrix();
       effect.setSize(window.innerWidth, window.innerHeight);
       renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -222,32 +135,26 @@ function CubeComponent() {
     return () => {
       clearTimeout(tooltipTimer);
 
+      if (controlsRef.current) {
+        controlsRef.current.dispose();
+      }
+
       if (mountRef.current && effect.domElement) {
         mountRef.current.removeChild(effect.domElement);
       }
-
-      // Remove event listeners
-      effect.domElement.removeEventListener('mousedown', onMouseDown as EventListener);
-      effect.domElement.removeEventListener('mousemove', onMouseMove as EventListener);
-      effect.domElement.removeEventListener('mouseup', onMouseUp);
-      effect.domElement.removeEventListener('mouseleave', onMouseUp);
-      effect.domElement.removeEventListener('wheel', onMouseWheel as EventListener);
-      effect.domElement.removeEventListener('touchstart', onTouchStart as EventListener);
-      effect.domElement.removeEventListener('touchmove', onTouchMove as EventListener);
-      effect.domElement.removeEventListener('touchend', onTouchEnd as EventListener);
 
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
-    <div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center">
+    <div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center overflow-hidden">
       {showTooltip && (
         <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 p-3 rounded-md border border-gray-700 font-mono text-white text-sm z-20 transition-opacity duration-300">
           <div className="flex flex-col items-center">
             <p className="mb-1">psst...</p>
-            <p className="mb-1">🖱️ Click and drag to rotate</p>
-            <p>🔍 Or zoom in/out</p>
+            <p className="mb-1">👆 Touch and drag to rotate</p>
+            <p>👌 Pinch to zoom in/out</p>
           </div>
         </div>
       )}
@@ -287,7 +194,7 @@ function AsciiBall() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let camera: THREE.PerspectiveCamera, controls: TrackballControls, scene: THREE.Scene, renderer: WebGLRenderer, effect: AsciiEffect;
+    let camera: THREE.PerspectiveCamera, controls: OrbitControls, scene: THREE.Scene, renderer: WebGLRenderer, effect: AsciiEffect;
     let sphere: THREE.Mesh, plane: THREE.Mesh;
     const start = Date.now();
 
@@ -324,7 +231,7 @@ function AsciiBall() {
     effect.domElement.style.color = 'white';
     effect.domElement.style.backgroundColor = 'black';
 
-    controls = new TrackballControls(camera, effect.domElement);
+    controls = new OrbitControls(camera, effect.domElement);
 
     window.addEventListener('resize', onWindowResize);
 
