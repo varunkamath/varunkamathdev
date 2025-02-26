@@ -315,15 +315,30 @@ function ShapeComponent() {
   const [showTooltip, setShowTooltip] = useState(true);
   const [currentShapeName, setCurrentShapeName] = useState<string>("shape");
   const [isPersonalInfoMinimized, setIsPersonalInfoMinimized] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode until we detect
 
   // Apply styles to prevent scrolling on body when component mounts
   useEffect(() => {
     // Set overflow hidden on body to prevent scrolling
     document.body.style.overflow = 'hidden';
 
+    // Detect user's color scheme preference
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Set initial mode based on system preference
+    setIsDarkMode(darkModeMediaQuery.matches);
+
+    // Add listener for changes to color scheme preference
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
+      setIsDarkMode(e.matches);
+    };
+
+    darkModeMediaQuery.addEventListener('change', handleColorSchemeChange);
+
     // Restore original styles on unmount
     return () => {
       document.body.style.overflow = '';
+      darkModeMediaQuery.removeEventListener('change', handleColorSchemeChange);
     };
   }, []);
 
@@ -389,10 +404,10 @@ function ShapeComponent() {
     renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
 
     // ASCII effect
-    const effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+    const effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: isDarkMode });
     effect.setSize(window.innerWidth, window.innerHeight);
-    effect.domElement.style.color = 'white';
-    effect.domElement.style.backgroundColor = 'black';
+    effect.domElement.style.color = isDarkMode ? 'white' : 'black';
+    effect.domElement.style.backgroundColor = isDarkMode ? 'black' : 'white';
 
     // Make sure the canvas element gets proper touch handling
     effect.domElement.style.touchAction = 'none';
@@ -486,12 +501,29 @@ function ShapeComponent() {
 
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isDarkMode]);
+
+  // Update effect when dark mode changes
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    // Find the canvas element which is the first child of the mount ref
+    const canvas = mountRef.current.querySelector('canvas');
+    if (canvas) {
+      // Update styles based on current theme
+      canvas.style.color = isDarkMode ? 'white' : 'black';
+      canvas.style.backgroundColor = isDarkMode ? 'black' : 'white';
+    }
+  }, [isDarkMode]);
 
   return (
     <div id="canvas" ref={mountRef} className="flex justify-center h-screen items-center overflow-hidden">
       {showTooltip && (
-        <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 p-3 rounded-md border border-gray-700 font-mono text-white text-sm z-20 transition-opacity duration-300">
+        <div className={`absolute top-10 left-1/2 transform -translate-x-1/2 p-3 rounded-md border font-mono text-sm z-20 transition-opacity duration-300
+          ${isDarkMode ?
+            'bg-black bg-opacity-80 text-white border-gray-700' :
+            'bg-white bg-opacity-80 text-black border-gray-300'
+          }`}>
           <div className="flex flex-col items-center">
             <p className="mb-1">psst...</p>
             <p className="mb-1">👆 Touch and drag to rotate the {currentShapeName}</p>
@@ -502,7 +534,7 @@ function ShapeComponent() {
 
       {/* Permanent shape indicator in bottom right - now clickable */}
       <div
-        className="absolute bottom-4 right-4 bg-black bg-opacity-80 p-2 rounded-md border border-gray-700 font-mono text-white text-sm z-20 cursor-pointer hover:bg-opacity-100 hover:border-white transition-all duration-300"
+        className="absolute bottom-4 right-4 p-2 rounded-md border border-gray-700 font-mono text-sm z-20 cursor-pointer hover:border-white transition-all duration-300 bg-black bg-opacity-80 text-white hover:bg-opacity-100"
         onClick={changeShape}
         title="Click to change shape"
       >
@@ -522,10 +554,18 @@ function ShapeComponent() {
         {/* Terminal wrapper - contains both the terminal box and the label */}
         <div className="relative">
           {/* The terminal box */}
-          <div className="p-4 pt-5 font-mono text-xs md:text-sm backdrop-blur-md md:invert text-white z-10 relative border border-gray-700 rounded-md bg-black bg-opacity-80 w-[350px] md:w-[420px] h-[280px] md:h-[320px] overflow-y-auto">
+          <div className={`p-4 pt-5 font-mono text-xs md:text-sm backdrop-blur-md relative border rounded-md z-10 w-[350px] md:w-[550px] h-[280px] md:h-[320px] overflow-y-auto
+            ${isDarkMode ?
+              'text-white border-gray-700 bg-black bg-opacity-80' :
+              'text-black border-gray-300 bg-white bg-opacity-80 invert-0'
+            } transition-colors duration-300`}>
             {/* Minimize/expand button */}
             <button
-              className="absolute top-2 right-2 bg-black bg-opacity-70 hover:bg-opacity-100 rounded-full w-6 h-6 flex items-center justify-center text-white transition-colors duration-200 z-20"
+              className={`absolute top-2 right-2 rounded-full w-6 h-6 flex items-center justify-center transition-colors duration-200 z-20
+                ${isDarkMode ?
+                  'bg-black bg-opacity-70 text-white hover:bg-opacity-100' :
+                  'bg-white bg-opacity-70 text-black hover:bg-opacity-100'
+                }`}
               onClick={() => setIsPersonalInfoMinimized(!isPersonalInfoMinimized)}
               title={isPersonalInfoMinimized ? "Expand info" : "Minimize info"}
             >
@@ -540,30 +580,38 @@ function ShapeComponent() {
                   deleteSpeed: 1,
                 }}
                 onInit={(typewriter) => {
-                  typewriter.pauseFor(500)
+                  // Get the proper green color class based on theme
+                  const promptColor = isDarkMode ? "text-green-400" : "text-green-700";
+                  // Get the proper link color class based on theme
+                  const linkColor = isDarkMode ? "text-cyan-400" : "text-cyan-700";
+
+                  typewriter
+                    // Show just the prompt for a second before typing begins
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
+                    .pauseFor(1000)
+
                     // First command - whoami
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
                     .typeString('whoami')
                     .pauseFor(600)
                     .typeString('<br/>')
-                    .pasteString('<a href="https://varunkamath.dev" class="underline text-cyan-400">varun</a><br/>', null)
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pasteString(`<a href="https://varunkamath.dev" class="underline ${linkColor}">varun</a><br/>`, null)
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
                     .pauseFor(800)
 
                     // Second command - GitHub
                     .typeString('ls -l projects')
                     .pauseFor(600)
                     .typeString('<br/>')
-                    .pasteString('<a href="https://github.com/varunkamath" class="underline text-cyan-400">github.com/varunkamath</a><br/>', null)
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pasteString(`<a href="https://github.com/varunkamath" class="underline ${linkColor}">github.com/varunkamath</a><br/>`, null)
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
                     .pauseFor(800)
 
                     // Third command - LinkedIn
                     .typeString('cat contact.txt')
                     .pauseFor(600)
                     .typeString('<br/>')
-                    .pasteString('<a href="https://linkedin.com/in/varun-kamath" class="underline text-cyan-400">linkedin.com/in/varun-kamath</a><br/>', null)
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pasteString(`<a href="https://linkedin.com/in/varun-kamath" class="underline ${linkColor}">linkedin.com/in/varun-kamath</a><br/>`, null)
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
                     .pauseFor(800)
 
                     // Fourth command - Need to get in touch
@@ -571,15 +619,15 @@ function ShapeComponent() {
                     .pauseFor(600)
                     .typeString('<br/>')
                     .pasteString('Need to get in touch?<br/>', null)
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
                     .pauseFor(800)
 
                     // Fifth command - Email
                     .typeString('mail -s "Hello" varun.kamath@gmail.com')
                     .pauseFor(600)
                     .typeString('<br/>')
-                    .pasteString('<a href="mailto:varun.kamath@gmail.com" class="underline text-cyan-400">Message sent!</a><br/>', null)
-                    .pasteString('<span class="text-green-400">varun@home:~$</span> ', null)
+                    .pasteString(`<a href="mailto:varun.kamath@gmail.com" class="underline ${linkColor}">Message sent!</a><br/>`, null)
+                    .pasteString(`<span class="${promptColor}">varun@home:~$</span> `, null)
                     .callFunction(() => {
                       console.log('Shell typing completed!');
                     })
@@ -591,7 +639,7 @@ function ShapeComponent() {
 
           {/* Show minimized state indicator - now positioned in the wrapper */}
           {isPersonalInfoMinimized && (
-            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 px-3 py-1 text-xs text-white rounded-md border border-gray-700 z-50 shadow-md md:block hidden">
+            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 px-3 py-1 text-xs rounded-md z-50 shadow-md md:block hidden bg-black text-white border border-white">
               Terminal
             </div>
           )}
@@ -602,7 +650,7 @@ function ShapeComponent() {
       {isPersonalInfoMinimized && (
         <button
           onClick={() => setIsPersonalInfoMinimized(false)}
-          className="md:hidden fixed bottom-4 left-4 bg-black bg-opacity-80 p-2 rounded-md border border-gray-700 font-mono text-white text-sm z-50 cursor-pointer hover:bg-opacity-100 hover:border-white transition-all duration-300 flex items-center justify-center"
+          className="md:hidden fixed bottom-4 left-4 p-2 rounded-md border border-gray-700 font-mono text-sm z-50 cursor-pointer hover:border-white transition-all duration-300 flex items-center justify-center bg-black bg-opacity-80 text-white hover:bg-opacity-100"
           aria-label="Open Terminal"
         >
           <span className="mr-2">✧</span>
@@ -616,6 +664,29 @@ function ShapeComponent() {
 
 function AsciiBall() {
   const mountRef = useRef<HTMLDivElement>(null);
+  // Access the dark mode state from the parent component using context
+  // For simplicity, we'll use the matchMedia API directly
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    // Detect user's color scheme preference
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Set initial mode based on system preference
+    setIsDarkMode(darkModeMediaQuery.matches);
+
+    // Add listener for changes to color scheme preference
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
+      setIsDarkMode(e.matches);
+    };
+
+    darkModeMediaQuery.addEventListener('change', handleColorSchemeChange);
+
+    // Clean up
+    return () => {
+      darkModeMediaQuery.removeEventListener('change', handleColorSchemeChange);
+    };
+  }, []);
 
   useEffect(() => {
     let camera: THREE.PerspectiveCamera, controls: OrbitControls, scene: THREE.Scene, renderer: WebGLRenderer, effect: AsciiEffect;
@@ -650,10 +721,10 @@ function AsciiBall() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+    effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: isDarkMode });
     effect.setSize(window.innerWidth, window.innerHeight);
-    effect.domElement.style.color = 'white';
-    effect.domElement.style.backgroundColor = 'black';
+    effect.domElement.style.color = isDarkMode ? 'white' : 'black';
+    effect.domElement.style.backgroundColor = isDarkMode ? 'black' : 'white';
 
     controls = new OrbitControls(camera, effect.domElement);
 
@@ -694,7 +765,7 @@ function AsciiBall() {
         mountRef.current.removeChild(effect.domElement);
       }
     };
-  }, []);
+  }, [isDarkMode]);
 
   return <div ref={mountRef} />;
 }
