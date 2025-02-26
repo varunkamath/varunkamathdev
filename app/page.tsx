@@ -404,7 +404,7 @@ function ShapeComponent() {
     renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
 
     // ASCII effect
-    const effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: isDarkMode });
+    const effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
     effect.setSize(window.innerWidth, window.innerHeight);
     effect.domElement.style.color = isDarkMode ? 'white' : 'black';
     effect.domElement.style.backgroundColor = isDarkMode ? 'black' : 'white';
@@ -721,7 +721,7 @@ function AsciiBall() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: isDarkMode });
+    effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
     effect.setSize(window.innerWidth, window.innerHeight);
     effect.domElement.style.color = isDarkMode ? 'white' : 'black';
     effect.domElement.style.backgroundColor = isDarkMode ? 'black' : 'white';
