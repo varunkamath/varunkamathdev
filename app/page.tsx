@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { WebGLRenderer } from "three/src/Three.js";
-import * as emoji from 'node-emoji'
 
 // Library of shape creation functions
 const shapeLibrary = [

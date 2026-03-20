@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -41,20 +39,15 @@ body {
   font-family: 'Lucida Console', Monaco, monospace;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@utility text-balance {
+  text-wrap: balance;
 }
 
 @media (max-width: 768px) {
-
-  /* Mobile-specific styles */
   .p-4.absolute {
     width: 85%;
     font-size: 0.9rem;
     padding: 1rem;
     background-color: rgba(0, 0, 0, 0.5);
-    /* Better visibility on mobile */
   }
 }
