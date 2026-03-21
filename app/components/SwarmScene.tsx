@@ -290,17 +290,18 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
     };
     scheduleAutoMorph();
 
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
 
     const animate = () => {
       const animId = requestAnimationFrame(animate);
       animationId = animId;
 
-      let dt = clock.getDelta();
+      timer.update();
+      let dt = timer.getDelta();
       dt = Math.max(0.001, Math.min(dt, 0.05));
       const now = Date.now();
 
-      material.uniforms.uTime.value = clock.getElapsedTime();
+      material.uniforms.uTime.value = timer.getElapsed();
 
       if (!isMobile && mouseNdc.x < 2) {
         mouseRaycaster.setFromCamera(mouseNdc, camera);

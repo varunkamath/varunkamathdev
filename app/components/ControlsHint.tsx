@@ -91,42 +91,40 @@ export default function ControlsHint() {
   }
 
   return (
-    <button
-      onClick={() => setView(view === 'collapsed' ? 'controls' : 'collapsed')}
-      className="
-        fixed z-10
-        top-4 left-1/2 -translate-x-1/2
-        md:top-6
-        px-3 py-1.5
-        rounded-full
-        border border-white/[0.06]
-        bg-white/[0.03]
-        backdrop-blur-xl
-        text-white/30 text-[11px]
-        hover:text-white/50 hover:border-white/[0.12]
-        transition-all duration-500
-        cursor-pointer
-        animate-panel-in
-      "
+    <div
+      className="fixed z-10 top-4 md:top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 animate-panel-in"
       style={{ fontFamily: 'var(--font-mono)', animationDelay: '1.5s' }}
     >
-      {view === 'controls' ? (
-        <span>
-          {controls}
-          {' \u00b7 '}
-          <button
-            className="text-white/50 hover:text-[#c0d8f0] transition-colors duration-300 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              setView('about');
-            }}
-          >
-            what is this?
-          </button>
-        </span>
-      ) : (
-        '?'
+      <button
+        onClick={() => setView(view === 'collapsed' ? 'controls' : 'collapsed')}
+        className="
+          px-3 py-1.5
+          rounded-full
+          border border-white/[0.06]
+          bg-white/[0.03]
+          backdrop-blur-xl
+          text-white/30 text-[11px]
+          hover:text-white/50 hover:border-white/[0.12]
+          transition-all duration-500
+          cursor-pointer
+        "
+      >
+        {view === 'controls' ? controls : '?'}
+      </button>
+      {view === 'controls' && (
+        <button
+          onClick={() => setView('about')}
+          className="
+            text-white/30 text-[11px]
+            hover:text-[#c0d8f0]
+            transition-colors duration-300
+            cursor-pointer
+            whitespace-nowrap
+          "
+        >
+          what is this?
+        </button>
       )}
-    </button>
+    </div>
   );
 }
