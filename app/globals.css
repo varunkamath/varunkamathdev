@@ -40,3 +40,35 @@ body {
 @utility animate-fade-in {
   animation: fade-in 0.4s ease-out both;
 }
+
+@keyframes ripple-ring {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+@keyframes ripple-expand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.6;
+  }
+  100% {
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+@utility animate-ripple-ring {
+  animation: ripple-ring 2.5s ease-out forwards;
+}
+
+@utility animate-ripple-expand {
+  animation: ripple-expand 1.2s ease-out forwards;
+}

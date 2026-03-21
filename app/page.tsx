@@ -1,15 +1,26 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import SwarmScene, { type SwarmSceneHandle } from './components/SwarmScene';
+import { useState, useRef, useCallback } from 'react';
+import SwarmScene, { type SwarmSceneHandle, type InteractionEvent } from './components/SwarmScene';
 import InfoPanel from './components/InfoPanel';
 import ShapeLabel from './components/ShapeLabel';
 import GyroPrompt from './components/GyroPrompt';
 import ControlsHint from './components/ControlsHint';
+import { RippleLayer } from './components/InteractionRipple';
+
+interface Ripple {
+  id: number;
+  x: number;
+  y: number;
+  type: 'attract' | 'repel';
+}
+
+let nextRippleId = 0;
 
 export default function Home() {
   const [shapeName, setShapeName] = useState('torus');
   const [showGyroPrompt, setShowGyroPrompt] = useState(false);
+  const [ripples, setRipples] = useState<Ripple[]>([]);
   const sceneRef = useRef<SwarmSceneHandle>(null);
 
   const handleGyroResult = (granted: boolean) => {
@@ -29,12 +40,27 @@ export default function Home() {
     setShowGyroPrompt(true);
   };
 
+  const handleInteraction = useCallback((event: InteractionEvent) => {
+    const id = nextRippleId++;
+    setRipples((prev) => [...prev, { id, x: event.x, y: event.y, type: event.type }]);
+  }, []);
+
+  const handleRippleComplete = useCallback((id: number) => {
+    setRipples((prev) => prev.filter((r) => r.id !== id));
+  }, []);
+
   return (
     <main className="h-screen w-screen overflow-hidden bg-black">
-      <SwarmScene ref={sceneRef} onShapeChange={setShapeName} onGyroNeeded={handleGyroNeeded} />
+      <SwarmScene
+        ref={sceneRef}
+        onShapeChange={setShapeName}
+        onGyroNeeded={handleGyroNeeded}
+        onInteraction={handleInteraction}
+      />
       <InfoPanel />
       <ShapeLabel shapeName={shapeName} onClick={() => sceneRef.current?.triggerMorph()} />
       <ControlsHint />
+      <RippleLayer ripples={ripples} onComplete={handleRippleComplete} />
       {showGyroPrompt && <GyroPrompt onResult={handleGyroResult} />}
     </main>
   );

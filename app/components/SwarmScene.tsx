@@ -36,9 +36,16 @@ export interface SwarmSceneHandle {
   enableGyro: () => void;
 }
 
+export interface InteractionEvent {
+  x: number;
+  y: number;
+  type: 'attract' | 'repel';
+}
+
 interface SwarmSceneProps {
   onShapeChange?: (name: string) => void;
   onGyroNeeded?: () => void;
+  onInteraction?: (event: InteractionEvent) => void;
 }
 
 const easeInCubic = (t: number) => t * t * t;
@@ -62,7 +69,7 @@ const _scale = new THREE.Vector3(1, 1, 1);
 const _spherical = new THREE.Spherical();
 
 const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmScene(
-  { onShapeChange, onGyroNeeded },
+  { onShapeChange, onGyroNeeded, onInteraction },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,6 +77,8 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
   onShapeChangeRef.current = onShapeChange;
   const onGyroNeededRef = useRef(onGyroNeeded);
   onGyroNeededRef.current = onGyroNeeded;
+  const onInteractionRef = useRef(onInteraction);
+  onInteractionRef.current = onInteraction;
 
   const enableGyroRef = useRef<(() => void) | null>(null);
   const startMorphRef = useRef<(() => void) | null>(null);
@@ -149,7 +158,7 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
     controls.minDistance = 6;
     controls.maxDistance = 30;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.8;
+    controls.autoRotateSpeed = 1.0;
 
     if (isMobile) {
       controls.enableRotate = false;
@@ -173,8 +182,11 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
     const mouseRaycaster = new THREE.Raycaster();
     const mouseNdc = new THREE.Vector2(9999, 9999);
 
+    const pointerStartInfo = new Map<number, { x: number; y: number; time: number }>();
+
     const handleDown = (e: PointerEvent) => {
       if (!isMobile && e.button === 2) return;
+      pointerStartInfo.set(e.pointerId, { x: e.clientX, y: e.clientY, time: Date.now() });
       onPointerDown(interactions, e, camera);
     };
     const handleMove = (e: PointerEvent) => {
@@ -187,6 +199,21 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
       }
     };
     const handleUp = (e: PointerEvent) => {
+      const start = pointerStartInfo.get(e.pointerId);
+      if (start) {
+        const dx = e.clientX - start.x;
+        const dy = e.clientY - start.y;
+        const moved = dx * dx + dy * dy > 64;
+        if (!moved) {
+          const isLong = Date.now() - start.time >= 500;
+          onInteractionRef.current?.({
+            x: e.clientX,
+            y: e.clientY,
+            type: isLong ? 'repel' : 'attract',
+          });
+        }
+        pointerStartInfo.delete(e.pointerId);
+      }
       onPointerUp(interactions, e, camera);
     };
     const handleLeave = () => {
@@ -344,7 +371,6 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
         controls.update();
       }
 
-      mesh.rotation.y += 0.001;
       renderer.render(scene, camera);
     };
 
