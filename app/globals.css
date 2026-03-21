@@ -7,6 +7,10 @@ body {
   overflow: hidden;
   background: #000;
   color: rgba(255, 255, 255, 0.88);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
 }
 
 @keyframes panel-in {

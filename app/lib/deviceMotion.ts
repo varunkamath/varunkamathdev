@@ -42,14 +42,14 @@ export function handleOrientation(state: GyroState, event: DeviceOrientationEven
   const beta = (event.beta ?? 0) * DEG2RAD;
   const gamma = (event.gamma ?? 0) * DEG2RAD;
 
-  state.targetTheta = clamp(BASE_THETA + gamma * 0.5, BASE_THETA - 0.5, BASE_THETA + 0.5);
-  state.targetPhi = clamp(BASE_PHI + (beta - 0.75) * 0.3, BASE_PHI - 0.4, BASE_PHI + 0.4);
+  state.targetTheta = clamp(BASE_THETA + gamma * 1.0, BASE_THETA - 1.0, BASE_THETA + 1.0);
+  state.targetPhi = clamp(BASE_PHI + (beta - 0.75) * 0.6, BASE_PHI - 0.8, BASE_PHI + 0.8);
   state.active = true;
 }
 
 export function updateGyroCamera(state: GyroState): void {
-  state.currentTheta += (state.targetTheta - state.currentTheta) * 0.08;
-  state.currentPhi += (state.targetPhi - state.currentPhi) * 0.08;
+  state.currentTheta += (state.targetTheta - state.currentTheta) * 0.12;
+  state.currentPhi += (state.targetPhi - state.currentPhi) * 0.12;
 }
 
 // Shake detection
