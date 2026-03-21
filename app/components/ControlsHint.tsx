@@ -14,7 +14,10 @@ export default function ControlsHint() {
     return () => clearTimeout(timer);
   }, []);
 
-  const controls = isMobile
+  const controlsShort = isMobile
+    ? 'tap \u00b7 hold \u00b7 drag'
+    : 'move \u00b7 click \u00b7 right-drag';
+  const controlsFull = isMobile
     ? 'tap to attract \u00b7 hold to repel \u00b7 drag to guide'
     : 'move to interact \u00b7 click to attract \u00b7 right-drag to orbit';
 
@@ -73,7 +76,7 @@ export default function ControlsHint() {
             on morph, the target points release and reassign to the next surface. your interactions
             inject attractor/repulsor forces that temporarily override the formation.
           </p>
-          <div className="text-white/25 text-[11px] mb-4">{controls}</div>
+          <div className="text-white/25 text-[11px] mb-4">{controlsFull}</div>
           <button
             onClick={() => setView('collapsed')}
             className="
@@ -92,7 +95,7 @@ export default function ControlsHint() {
 
   return (
     <div
-      className="fixed z-10 top-4 md:top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 animate-panel-in"
+      className="fixed z-10 top-4 md:top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 animate-panel-in"
       style={{ fontFamily: 'var(--font-mono)', animationDelay: '1.5s' }}
     >
       <button
@@ -107,19 +110,19 @@ export default function ControlsHint() {
           hover:text-white/50 hover:border-white/[0.12]
           transition-all duration-500
           cursor-pointer
+          whitespace-nowrap
         "
       >
-        {view === 'controls' ? controls : '?'}
+        {view === 'controls' ? controlsShort : '?'}
       </button>
       {view === 'controls' && (
         <button
           onClick={() => setView('about')}
           className="
-            text-white/30 text-[11px]
+            text-white/25 text-[10px]
             hover:text-[#c0d8f0]
             transition-colors duration-300
             cursor-pointer
-            whitespace-nowrap
           "
         >
           what is this?
