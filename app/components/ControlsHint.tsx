@@ -10,14 +10,13 @@ export default function ControlsHint() {
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
-    const timer = setTimeout(() => setView('collapsed'), 6000);
+    const timer = setTimeout(() => {
+      setView((v) => (v === 'controls' ? 'collapsed' : v));
+    }, 6000);
     return () => clearTimeout(timer);
   }, []);
 
-  const controlsShort = isMobile
-    ? 'tap \u00b7 hold \u00b7 drag'
-    : 'move \u00b7 click \u00b7 right-drag';
-  const controlsFull = isMobile
+  const controls = isMobile
     ? 'tap to attract \u00b7 hold to repel \u00b7 drag to guide'
     : 'move to interact \u00b7 click to attract \u00b7 right-drag to orbit';
 
@@ -76,7 +75,7 @@ export default function ControlsHint() {
             on morph, the target points release and reassign to the next surface. your interactions
             inject attractor/repulsor forces that temporarily override the formation.
           </p>
-          <div className="text-white/25 text-[11px] mb-4">{controlsFull}</div>
+          <div className="text-white/25 text-[11px] mb-4">{controls}</div>
           <button
             onClick={() => setView('collapsed')}
             className="
@@ -113,7 +112,7 @@ export default function ControlsHint() {
           whitespace-nowrap
         "
       >
-        {view === 'controls' ? controlsShort : '?'}
+        {view === 'controls' ? controls : '?'}
       </button>
       {view === 'controls' && (
         <button
