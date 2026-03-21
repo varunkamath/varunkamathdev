@@ -50,6 +50,7 @@ function RippleDot({ ripple, onComplete }: { ripple: Ripple; onComplete: (id: nu
   }, [ripple.id, onComplete]);
 
   const isAttract = ripple.type === 'attract';
+  const colorVar = isAttract ? '--accent-rgb' : '--repel-rgb';
 
   return (
     <div
@@ -65,14 +66,14 @@ function RippleDot({ ripple, onComplete }: { ripple: Ripple; onComplete: (id: nu
         style={{
           width: 6,
           height: 6,
-          boxShadow: `0 0 8px 2px ${isAttract ? 'rgba(192, 216, 240, 0.6)' : 'rgba(255, 140, 120, 0.5)'}`,
-          background: isAttract ? 'rgba(192, 216, 240, 0.8)' : 'rgba(255, 140, 120, 0.7)',
+          boxShadow: `0 0 8px 2px rgba(var(${colorVar}), ${isAttract ? 0.6 : 0.5})`,
+          background: `rgba(var(${colorVar}), ${isAttract ? 0.8 : 0.7})`,
         }}
       />
       <div
         className="absolute inset-0 rounded-full animate-ripple-expand"
         style={{
-          border: `1px solid ${isAttract ? 'rgba(192, 216, 240, 0.4)' : 'rgba(255, 140, 120, 0.3)'}`,
+          border: `1px solid rgba(var(${colorVar}), ${isAttract ? 0.4 : 0.3})`,
           transform: 'translate(-50%, -50%)',
           left: '50%',
           top: '50%',

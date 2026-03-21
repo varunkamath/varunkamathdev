@@ -7,5 +7,3 @@ export const SHAPES = [
 ] as const;
 
 export const SHAPE_COUNT = SHAPES.length;
-
-export const ACCENT_COLOR = [0.75, 0.85, 0.95] as const; // cool white-blue

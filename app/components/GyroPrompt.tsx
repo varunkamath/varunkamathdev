@@ -17,7 +17,7 @@ export default function GyroPrompt({ onResult }: GyroPromptProps) {
       className="
         fixed inset-0 z-20
         flex items-center justify-center
-        bg-black/60
+        bg-[var(--dialog-backdrop)]
         animate-fade-in
       "
     >
@@ -25,15 +25,16 @@ export default function GyroPrompt({ onResult }: GyroPromptProps) {
         className="
           max-w-xs mx-4
           rounded-xl
-          border border-white/[0.08]
-          bg-white/[0.03]
+          border border-[var(--glass-border)]
+          bg-[var(--glass-bg)]
           backdrop-blur-xl backdrop-saturate-[1.2]
           px-7 py-6
           text-center
+          transition-colors duration-500
         "
       >
         <p
-          className="text-white/70 text-[13px] leading-relaxed"
+          className="text-[var(--text-secondary)] text-[13px] leading-relaxed"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           enable motion controls for the full experience
@@ -44,9 +45,9 @@ export default function GyroPrompt({ onResult }: GyroPromptProps) {
             onClick={handleAllow}
             className="
               px-4 py-1.5 rounded-full
-              border border-[#c0d8f0]/30
-              text-[#c0d8f0] text-[13px]
-              hover:bg-[#c0d8f0]/10
+              border border-[rgba(var(--accent-rgb),0.3)]
+              text-[var(--accent)] text-[13px]
+              hover:bg-[rgba(var(--accent-rgb),0.1)]
               transition-colors duration-300
               cursor-pointer
             "
@@ -57,8 +58,8 @@ export default function GyroPrompt({ onResult }: GyroPromptProps) {
             onClick={() => onResult(false)}
             className="
               px-4 py-1.5 rounded-full
-              text-white/30 text-[13px]
-              hover:text-white/50
+              text-[var(--text-muted)] text-[13px]
+              hover:text-[var(--text-secondary)]
               transition-colors duration-300
               cursor-pointer
             "

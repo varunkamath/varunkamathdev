@@ -25,8 +25,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
-      <body className={`${instrumentSerif.variable} ${geistMono.variable} bg-black`}>
+    <html
+      lang="en"
+      className={`dark ${instrumentSerif.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=localStorage.getItem('theme');var h=new Date().getHours();var m=p||(h>=7&&h<19?'light':'dark');var cl=document.documentElement.classList;cl.remove('dark');cl.add(m);document.documentElement.style.colorScheme=m}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body className="bg-black">
         {children}
         <Analytics />
       </body>

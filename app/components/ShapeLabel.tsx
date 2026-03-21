@@ -13,12 +13,12 @@ export default function ShapeLabel({ shapeName, onClick }: ShapeLabelProps) {
         fixed bottom-4 right-4 md:bottom-6 md:right-6
         z-10 px-3 py-1.5
         rounded-full
-        border border-white/[0.08]
-        bg-white/[0.03]
+        border border-[var(--glass-border)]
+        bg-[var(--glass-bg)]
         backdrop-blur-xl
-        text-white/40 text-[12px]
-        hover:text-[#c0d8f0] hover:border-[#c0d8f0]/30
-        transition-all duration-300
+        text-[var(--text-tertiary)] text-[12px]
+        hover:text-[var(--accent)] hover:border-[rgba(var(--accent-rgb),0.3)]
+        transition-all duration-500
         cursor-pointer
         capitalize
         animate-panel-in

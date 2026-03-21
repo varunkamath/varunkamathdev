@@ -27,7 +27,7 @@ export default function ControlsHint() {
         className="
           fixed z-20 inset-0 m-0 w-full h-full
           flex items-center justify-center
-          bg-black/60
+          bg-[var(--dialog-backdrop)]
           animate-fade-in
           border-none
         "
@@ -40,10 +40,11 @@ export default function ControlsHint() {
           className="
             max-w-sm mx-4
             rounded-xl
-            border border-white/[0.08]
-            bg-white/[0.03]
+            border border-[var(--glass-border)]
+            bg-[var(--glass-bg)]
             backdrop-blur-xl backdrop-saturate-[1.2]
             px-7 py-6
+            transition-colors duration-500
           "
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
@@ -51,18 +52,18 @@ export default function ControlsHint() {
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           <h2
-            className="text-white/80 text-lg mb-3 tracking-tight"
+            className="text-[var(--text-heading)] text-lg mb-3 tracking-tight"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             swarm field
           </h2>
-          <p className="text-white/40 text-[12px] leading-relaxed mb-3">
+          <p className="text-[var(--text-tertiary)] text-[12px] leading-relaxed mb-3">
             each particle is a{' '}
             <a
               href="https://en.wikipedia.org/wiki/Boids"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 hover:text-[#c0d8f0] transition-colors duration-300 underline underline-offset-2 decoration-white/20"
+              className="text-[var(--text-link)] hover:text-[var(--accent)] transition-colors duration-300 underline underline-offset-2 decoration-[var(--text-link-decoration)]"
             >
               boid
             </a>{' '}
@@ -71,16 +72,16 @@ export default function ControlsHint() {
             fourth force pulling each boid toward a point on a parametric surface and the swarm
             collectively traces the shape.
           </p>
-          <p className="text-white/40 text-[12px] leading-relaxed mb-4">
+          <p className="text-[var(--text-tertiary)] text-[12px] leading-relaxed mb-4">
             on morph, the target points release and reassign to the next surface. your interactions
             inject attractor/repulsor forces that temporarily override the formation.
           </p>
-          <div className="text-white/25 text-[11px] mb-4">{controls}</div>
+          <div className="text-[var(--text-muted)] text-[11px] mb-4">{controls}</div>
           <button
             onClick={() => setView('collapsed')}
             className="
-              text-white/30 text-[11px]
-              hover:text-[#c0d8f0]
+              text-[var(--text-muted)] text-[11px]
+              hover:text-[var(--accent)]
               transition-colors duration-300
               cursor-pointer
             "
@@ -102,11 +103,11 @@ export default function ControlsHint() {
         className="
           px-3 py-1.5
           rounded-full
-          border border-white/[0.06]
-          bg-white/[0.03]
+          border border-[var(--glass-border)]
+          bg-[var(--glass-bg)]
           backdrop-blur-xl
-          text-white/30 text-[11px]
-          hover:text-white/50 hover:border-white/[0.12]
+          text-[var(--text-muted)] text-[11px]
+          hover:text-[var(--text-secondary)] hover:border-[var(--glass-border-hover)]
           transition-all duration-500
           cursor-pointer
           whitespace-nowrap
@@ -118,8 +119,8 @@ export default function ControlsHint() {
         <button
           onClick={() => setView('about')}
           className="
-            text-white/25 text-[10px]
-            hover:text-[#c0d8f0]
+            text-[var(--text-muted)] text-[10px]
+            hover:text-[var(--accent)]
             transition-colors duration-300
             cursor-pointer
           "

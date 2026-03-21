@@ -1,5 +1,43 @@
 @import 'tailwindcss';
 
+:root {
+  --accent: #c0d8f0;
+  --accent-rgb: 192, 216, 240;
+  --accent-dark: #4a7a9e;
+  --accent-dark-rgb: 74, 122, 158;
+  --repel-rgb: 255, 140, 120;
+
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.12);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-heading: rgba(255, 255, 255, 0.8);
+  --text-secondary: rgba(255, 255, 255, 0.5);
+  --text-tertiary: rgba(255, 255, 255, 0.4);
+  --text-muted: rgba(255, 255, 255, 0.25);
+  --text-link: rgba(255, 255, 255, 0.6);
+  --text-link-decoration: rgba(255, 255, 255, 0.2);
+  --divider: rgba(255, 255, 255, 0.06);
+  --dialog-backdrop: rgba(0, 0, 0, 0.6);
+}
+
+html.light {
+  --accent: var(--accent-dark);
+  --accent-rgb: var(--accent-dark-rgb);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-hover: rgba(255, 255, 255, 0.65);
+  --text-primary: rgba(0, 0, 0, 0.85);
+  --text-heading: rgba(0, 0, 0, 0.75);
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-tertiary: rgba(0, 0, 0, 0.45);
+  --text-muted: rgba(0, 0, 0, 0.3);
+  --text-link: rgba(0, 0, 0, 0.5);
+  --text-link-decoration: rgba(0, 0, 0, 0.15);
+  --divider: rgba(0, 0, 0, 0.08);
+  --dialog-backdrop: rgba(0, 0, 0, 0.4);
+}
+
 html,
 body {
   margin: 0;
