@@ -65,7 +65,7 @@ export default function Home() {
         <InfoPanel />
         <ShapeLabel shapeName={shapeName} onClick={() => sceneRef.current?.triggerMorph()} />
         <ControlsHint onExpandedChange={handleHintExpandedChange} />
-        <ThemeToggle hidden={hintExpanded} />
+        {!hintExpanded && <ThemeToggle />}
         <RippleLayer ripples={ripples} onComplete={handleRippleComplete} />
         {showGyroPrompt && <GyroPrompt onResult={handleGyroResult} />}
       </main>
