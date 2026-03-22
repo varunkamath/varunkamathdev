@@ -28,9 +28,10 @@ import {
 import {
   createGyroState,
   handleOrientation,
-  updateGyroCamera,
+  updateGyroOffset,
   createShakeDetector,
   handleDeviceMotion,
+  GYRO_PREF_KEY,
 } from '../lib/deviceMotion';
 
 export interface SwarmSceneHandle {
@@ -71,7 +72,8 @@ const _mat4 = new THREE.Matrix4();
 const _pos = new THREE.Vector3();
 const _color = new THREE.Color();
 const _scale = new THREE.Vector3(1, 1, 1);
-const _spherical = new THREE.Spherical();
+const _gyroQuat = new THREE.Quaternion();
+const _gyroEuler = new THREE.Euler();
 
 const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmScene(
   { onShapeChange, onGyroNeeded, onInteraction },
@@ -280,17 +282,28 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
     enableGyroRef.current = () => {
       window.addEventListener('deviceorientation', onOrient);
       window.addEventListener('devicemotion', onMotion);
-      setTimeout(() => {
-        if (!gyroState.active) {
-          controls.enableRotate = true;
-          controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
-        }
-      }, 2000);
     };
+
+    let onFirstTouch: (() => void) | null = null;
 
     if (isMobile) {
       if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-        onGyroNeededRef.current?.();
+        let savedPref: string | null = null;
+        try {
+          savedPref = localStorage.getItem(GYRO_PREF_KEY);
+        } catch {}
+        if (savedPref === 'granted') {
+          onFirstTouch = async () => {
+            onFirstTouch = null;
+            try {
+              const result = await (DeviceOrientationEvent as any).requestPermission();
+              if (result === 'granted') enableGyroRef.current?.();
+            } catch {}
+          };
+          renderer.domElement.addEventListener('touchstart', onFirstTouch, { once: true });
+        } else if (savedPref !== 'denied') {
+          onGyroNeededRef.current?.();
+        }
       } else {
         enableGyroRef.current();
       }
@@ -444,13 +457,12 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
 
-      if (isMobile && gyroState.active) {
-        updateGyroCamera(gyroState);
-        _spherical.set(camera.position.length(), gyroState.currentPhi, gyroState.currentTheta);
-        camera.position.setFromSpherical(_spherical);
-        camera.lookAt(0, 0, 0);
-      } else {
-        controls.update();
+      controls.update();
+
+      if (isMobile && gyroState.active && updateGyroOffset(gyroState)) {
+        _gyroEuler.set(-gyroState.offsetPhi, -gyroState.offsetTheta, 0, 'YXZ');
+        _gyroQuat.setFromEuler(_gyroEuler);
+        camera.quaternion.multiply(_gyroQuat);
       }
 
       renderer.render(scene, camera);
@@ -471,6 +483,9 @@ const SwarmScene = forwardRef<SwarmSceneHandle, SwarmSceneProps>(function SwarmS
       window.removeEventListener('resize', onResize);
       window.removeEventListener('deviceorientation', onOrient);
       window.removeEventListener('devicemotion', onMotion);
+      if (onFirstTouch) {
+        renderer.domElement.removeEventListener('touchstart', onFirstTouch);
+      }
       renderer.domElement.removeEventListener('pointerdown', handleDown);
       renderer.domElement.removeEventListener('pointermove', handleMove);
       renderer.domElement.removeEventListener('pointerup', handleUp);

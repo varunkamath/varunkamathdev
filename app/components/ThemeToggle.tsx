@@ -2,13 +2,13 @@
 
 import { useTheme } from '../lib/theme';
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ hidden }: { hidden?: boolean }) {
   const { mode, toggle } = useTheme();
 
   return (
     <button
       onClick={toggle}
-      className="
+      className={`
         fixed top-4 right-4 md:top-6 md:right-6 z-10
         px-3 py-1.5
         rounded-full
@@ -20,7 +20,8 @@ export default function ThemeToggle() {
         transition-all duration-500
         cursor-pointer
         animate-panel-in
-      "
+        ${hidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+      `}
       style={{ fontFamily: 'var(--font-mono)', animationDelay: '1.8s' }}
       title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
     >

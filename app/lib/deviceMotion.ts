@@ -1,3 +1,5 @@
+import { MathUtils } from 'three';
+
 const DEG2RAD = Math.PI / 180;
 
 export async function requestGyroPermission(): Promise<boolean> {
@@ -16,40 +18,39 @@ export async function requestGyroPermission(): Promise<boolean> {
 export interface GyroState {
   targetTheta: number;
   targetPhi: number;
-  currentTheta: number;
-  currentPhi: number;
+  offsetTheta: number;
+  offsetPhi: number;
   active: boolean;
 }
 
-const BASE_THETA = Math.PI / 2;
-const BASE_PHI = Math.PI / 2;
+export const GYRO_PREF_KEY = 'gyroPref';
+
+const SENSITIVITY = 0.15;
+const MAX_YAW = 0.3;
+const MAX_PITCH = 0.25;
+const SMOOTHING = 0.08;
+const DEAD_ZONE = 1e-6;
 
 export function createGyroState(): GyroState {
-  return {
-    targetTheta: BASE_THETA,
-    targetPhi: BASE_PHI,
-    currentTheta: BASE_THETA,
-    currentPhi: BASE_PHI,
-    active: false,
-  };
-}
-
-function clamp(v: number, min: number, max: number): number {
-  return v < min ? min : v > max ? max : v;
+  return { targetTheta: 0, targetPhi: 0, offsetTheta: 0, offsetPhi: 0, active: false };
 }
 
 export function handleOrientation(state: GyroState, event: DeviceOrientationEvent): void {
   const beta = (event.beta ?? 0) * DEG2RAD;
   const gamma = (event.gamma ?? 0) * DEG2RAD;
 
-  state.targetTheta = clamp(BASE_THETA + gamma * 1.0, BASE_THETA - 1.0, BASE_THETA + 1.0);
-  state.targetPhi = clamp(BASE_PHI + (beta - 0.75) * 0.6, BASE_PHI - 0.8, BASE_PHI + 0.8);
+  state.targetTheta = MathUtils.clamp(gamma * SENSITIVITY, -MAX_YAW, MAX_YAW);
+  state.targetPhi = MathUtils.clamp((beta - 0.75) * SENSITIVITY, -MAX_PITCH, MAX_PITCH);
   state.active = true;
 }
 
-export function updateGyroCamera(state: GyroState): void {
-  state.currentTheta += (state.targetTheta - state.currentTheta) * 0.12;
-  state.currentPhi += (state.targetPhi - state.currentPhi) * 0.12;
+export function updateGyroOffset(state: GyroState): boolean {
+  const dTheta = state.targetTheta - state.offsetTheta;
+  const dPhi = state.targetPhi - state.offsetPhi;
+  if (Math.abs(dTheta) < DEAD_ZONE && Math.abs(dPhi) < DEAD_ZONE) return false;
+  state.offsetTheta += dTheta * SMOOTHING;
+  state.offsetPhi += dPhi * SMOOTHING;
+  return true;
 }
 
 // Shake detection

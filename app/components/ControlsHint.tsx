@@ -1,17 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type View = 'collapsed' | 'controls' | 'about';
 
-export default function ControlsHint() {
+export default function ControlsHint({
+  onExpandedChange,
+}: {
+  onExpandedChange?: (expanded: boolean) => void;
+}) {
   const [view, setView] = useState<View>('controls');
   const [isMobile, setIsMobile] = useState(false);
+  const onExpandedChangeRef = useRef(onExpandedChange);
+  onExpandedChangeRef.current = onExpandedChange;
+
+  const updateView = (next: View) => {
+    setView(next);
+    onExpandedChangeRef.current?.(next !== 'collapsed');
+  };
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
     const timer = setTimeout(() => {
-      setView((v) => (v === 'controls' ? 'collapsed' : v));
+      setView((v) => {
+        if (v === 'controls') {
+          onExpandedChangeRef.current?.(false);
+          return 'collapsed';
+        }
+        return v;
+      });
     }, 6000);
     return () => clearTimeout(timer);
   }, []);
@@ -31,9 +48,9 @@ export default function ControlsHint() {
           animate-fade-in
           border-none
         "
-        onClick={() => setView('collapsed')}
+        onClick={() => updateView('collapsed')}
         onKeyDown={(e) => {
-          if (e.key === 'Escape') setView('collapsed');
+          if (e.key === 'Escape') updateView('collapsed');
         }}
       >
         <div
@@ -78,7 +95,7 @@ export default function ControlsHint() {
           </p>
           <div className="text-[var(--text-muted)] text-[11px] mb-4">{controls}</div>
           <button
-            onClick={() => setView('collapsed')}
+            onClick={() => updateView('collapsed')}
             className="
               text-[var(--text-muted)] text-[11px]
               hover:text-[var(--accent)]
@@ -99,7 +116,7 @@ export default function ControlsHint() {
       style={{ fontFamily: 'var(--font-mono)', animationDelay: '1.5s' }}
     >
       <button
-        onClick={() => setView(view === 'collapsed' ? 'controls' : 'collapsed')}
+        onClick={() => updateView(view === 'collapsed' ? 'controls' : 'collapsed')}
         className="
           px-3 py-1.5
           rounded-full
@@ -117,7 +134,7 @@ export default function ControlsHint() {
       </button>
       {view === 'controls' && (
         <button
-          onClick={() => setView('about')}
+          onClick={() => updateView('about')}
           className="
             text-[var(--text-muted)] text-[10px]
             hover:text-[var(--accent)]

@@ -10,6 +10,7 @@ import ThemeToggle from './components/ThemeToggle';
 import { RippleLayer } from './components/InteractionRipple';
 import { usePalette } from './lib/palette';
 import { ThemeProvider } from './lib/theme';
+import { GYRO_PREF_KEY } from './lib/deviceMotion';
 
 interface Ripple {
   id: number;
@@ -25,24 +26,23 @@ export default function Home() {
   const [shapeName, setShapeName] = useState('torus');
   const [showGyroPrompt, setShowGyroPrompt] = useState(false);
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const [hintExpanded, setHintExpanded] = useState(true);
   const sceneRef = useRef<SwarmSceneHandle>(null);
 
   const handleGyroResult = (granted: boolean) => {
     setShowGyroPrompt(false);
+    try {
+      localStorage.setItem(GYRO_PREF_KEY, granted ? 'granted' : 'denied');
+    } catch {}
     if (granted) {
       sceneRef.current?.enableGyro();
     }
-    try {
-      sessionStorage.setItem('gyroPromptShown', '1');
-    } catch {}
   };
 
-  const handleGyroNeeded = () => {
-    try {
-      if (sessionStorage.getItem('gyroPromptShown')) return;
-    } catch {}
-    setShowGyroPrompt(true);
-  };
+  const handleHintExpandedChange = useCallback(
+    (expanded: boolean) => setHintExpanded(expanded),
+    [],
+  );
 
   const handleInteraction = useCallback((event: InteractionEvent) => {
     const id = nextRippleId++;
@@ -59,13 +59,13 @@ export default function Home() {
         <SwarmScene
           ref={sceneRef}
           onShapeChange={setShapeName}
-          onGyroNeeded={handleGyroNeeded}
+          onGyroNeeded={() => setShowGyroPrompt(true)}
           onInteraction={handleInteraction}
         />
         <InfoPanel />
         <ShapeLabel shapeName={shapeName} onClick={() => sceneRef.current?.triggerMorph()} />
-        <ControlsHint />
-        <ThemeToggle />
+        <ControlsHint onExpandedChange={handleHintExpandedChange} />
+        <ThemeToggle hidden={hintExpanded} />
         <RippleLayer ripples={ripples} onComplete={handleRippleComplete} />
         {showGyroPrompt && <GyroPrompt onResult={handleGyroResult} />}
       </main>
